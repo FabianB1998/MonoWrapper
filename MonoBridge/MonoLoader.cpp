@@ -34,16 +34,24 @@ int MonoLoader::ExecuteMainMethod(MonoAssembly * assembly, std::vector<std::stri
 	return retval;
 }
 
-void MonoLoader::ExecuteEventInAllAssemblies(std::string eventClassName, std::string eventName)
+//No parameters supported yet
+void MonoLoader::CacheMethods(std::string eventClassName, std::string eventName, std::string key)
 {
-	//TODO: Add image cache
-	for (auto assembly : loadedAssemblies) 
+	for (auto assembly : loadedAssemblies)
 	{
 		auto image = mono_assembly_get_image(assembly);
 		auto EmbeddedClass = mono_class_from_name(image, Namespace.c_str(), eventClassName.c_str());
 		auto Method = mono_class_get_method_from_name(EmbeddedClass, eventName.c_str(), 0);
-		void * params[1] = { NULL };
-		mono_runtime_invoke(Method, NULL, params, NULL);
+		cachedMethods[key][assembly] = Method;
+	}
+}
+
+//No parameters supported yet
+void MonoLoader::RunEvent(std::string eventName)
+{
+	for (auto func : cachedMethods[eventName]) 
+	{
+		mono_runtime_invoke(func.second, NULL, NULL, NULL);
 	}
 }
 
