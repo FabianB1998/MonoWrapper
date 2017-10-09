@@ -11,9 +11,11 @@ public:
 	void LoadAssembly(std::string path, bool useNewDomain = false);
 	int ExecuteMainMethod(MonoAssembly* assembly, std::vector<std::string> arguments);
 	void ExecuteEventInAllAssemblies(std::string eventClassName, std::string eventName);
+	void SetNamespace(std::string Namespace);
 	~MonoLoader();
 private:
 	MonoDomain* domain;
 	std::vector<MonoAssembly*> loadedAssemblies;
+	std::string Namespace;
 };
 

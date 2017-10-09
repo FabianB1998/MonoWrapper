@@ -4,6 +4,7 @@
 
 MonoLoader::MonoLoader(std::string monoAssembliesPath, std::string monoConfigPath)
 {
+	Namespace = "Placeholder";
 	domain = mono_jit_init("TestDomain");
 	mono_set_dirs(monoAssembliesPath.c_str(), monoConfigPath.c_str());
 }
@@ -39,11 +40,16 @@ void MonoLoader::ExecuteEventInAllAssemblies(std::string eventClassName, std::st
 	for (auto assembly : loadedAssemblies) 
 	{
 		auto image = mono_assembly_get_image(assembly);
-		auto EmbeddedClass = mono_class_from_name(image, "EloSuite", eventClassName.c_str());
+		auto EmbeddedClass = mono_class_from_name(image, Namespace.c_str(), eventClassName.c_str());
 		auto Method = mono_class_get_method_from_name(EmbeddedClass, eventName.c_str(), 0);
 		void * params[1] = { NULL };
 		mono_runtime_invoke(Method, NULL, params, NULL);
 	}
+}
+
+void MonoLoader::SetNamespace(std::string Namespace)
+{
+	this->Namespace = Namespace;
 }
 
 MonoLoader::~MonoLoader()
